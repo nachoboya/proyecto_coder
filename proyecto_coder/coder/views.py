@@ -12,7 +12,10 @@ def estudiante(request):
     return HttpResponse("Vista de estudiante")
 
 def profesor(request):
-    return HttpResponse("Vista de profesor")
+    profesor = Profesor(nombre= "Leonel", apellido="Gareis", email="example@example.com", profesion="Cloud Developer")
+    profesor.save()
+
+    return HttpResponse("Profesor agregado")
 
 def entregable(request):
     return HttpResponse("Vista de entregable")
@@ -21,8 +24,4 @@ def cursos(request):
 
     cursos = Curso.objects.all()
 
-    lista_cursos_nombres = []
-
-    for curso in cursos:
-        lista_cursos_nombres.append(curso.nombre)
-    return HttpResponse(lista_cursos_nombres)
+    return render(request, "coder/cursos.html", {"cursos":cursos})

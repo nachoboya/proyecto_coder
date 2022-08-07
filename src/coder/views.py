@@ -36,3 +36,21 @@ def cursos(request):
     }
 
     return render(request, "coder/cursos.html", contexto)
+
+
+def crear_curso(request):
+
+    if request.method == "GET":
+        return render(request, "coder/formulario.html")
+    else:
+        nombre = request.POST["nombre"]
+        camada = request.POST["camada"]
+        curso = Curso(nombre=nombre, camada=camada)
+
+        curso.save()
+
+        return render(request, "coder/index.html")
+
+
+
+

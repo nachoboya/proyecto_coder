@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from coder.models import Curso, Estudiante, Profesor, Entregable
+from coder.forms import CursoFormulario, ProfesorFormulario
 # Create your views here.
 
 
@@ -41,16 +42,62 @@ def cursos(request):
 def crear_curso(request):
 
     if request.method == "GET":
-        return render(request, "coder/formulario.html")
+        formulario = CursoFormulario()
+        return render(request, "coder/formulario.html", {"formulario":formulario})
     else:
-        nombre = request.POST["nombre"]
-        camada = request.POST["camada"]
-        curso = Curso(nombre=nombre, camada=camada)
 
-        curso.save()
+        formulario = CursoFormulario(request.POST)
 
-        return render(request, "coder/index.html")
+        if formulario.is_valid():
 
+            data = formulario.cleaned_data
 
+            nombre = data.get("nombre")
+            camada = data.get("camada")
+            curso = Curso(nombre=nombre, camada=camada)
 
+            curso.save()
 
+            return render(request, "coder/index.html")
+        
+        else:
+            return HttpResponse("Formulario no valido")
+
+def crear_profesor(request):
+
+    if request.method == "GET":
+        formulario = ProfesorFormulario()
+        return render(request, "coder/formulario.html", {"formulario":formulario})
+    else:
+
+        formulario = ProfesorFormulario(request.POST)
+
+        if formulario.is_valid():
+
+            data = formulario.cleaned_data
+
+            nombre = data.get("nombre")
+            apellido = data.get("apellido")
+            email = data.get("email")
+            profesion = data.get("profesion")
+            profesor = Profesor(nombre=nombre, apellido=apellido, email=email, profesion=profesion)
+
+            profesor.save()
+
+            return render(request, "coder/index.html")
+        
+        else:
+            return HttpResponse("Formulario no valido")
+
+def formulario_busqueda(request):
+    return render(request, "coder/formulario_busqueda.html")
+
+def buscar(request):
+
+    curso_nombre = request.GET.get("curso", None)
+
+    if not curso_nombre:
+        return HttpResponse("No indicaste ningun nombre")
+
+    cursos_lista = Curso.objects.filter(nombre__icontains=curso_nombre)
+    return render(request, "coder/resultado_busqueda.html", {"cursos": cursos_lista})
